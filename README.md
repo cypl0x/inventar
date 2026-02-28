@@ -1,4 +1,4 @@
-# counter
+# inventar
 
 A new Flutter project.
 
