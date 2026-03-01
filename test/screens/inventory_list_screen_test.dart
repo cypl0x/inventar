@@ -55,9 +55,7 @@ void main() {
   testWidgets('shows empty state when inventory has no items', (tester) async {
     final repo = FakeInventoryRepository([]);
 
-    await tester.pumpWidget(
-      MaterialApp(home: InventoryListScreen(repo: repo)),
-    );
+    await tester.pumpWidget(MaterialApp(home: InventoryListScreen(repo: repo)));
 
     expect(find.text('Inventory is empty'), findsOneWidget);
     expect(find.text('Tap + below to add your first item'), findsOneWidget);
@@ -65,12 +63,7 @@ void main() {
 
   testWidgets('renders item count in the app bar chip', (tester) async {
     final repo = FakeInventoryRepository([
-      _item(
-        id: '1',
-        name: 'Pens',
-        description: 'Blue pens',
-        quantity: 10,
-      ),
+      _item(id: '1', name: 'Pens', description: 'Blue pens', quantity: 10),
       _item(
         id: '2',
         name: 'Staplers',
@@ -79,32 +72,18 @@ void main() {
       ),
     ]);
 
-    await tester.pumpWidget(
-      MaterialApp(home: InventoryListScreen(repo: repo)),
-    );
+    await tester.pumpWidget(MaterialApp(home: InventoryListScreen(repo: repo)));
 
     expect(find.text('2 items'), findsOneWidget);
   });
 
   testWidgets('filters items based on search query', (tester) async {
     final repo = FakeInventoryRepository([
-      _item(
-        id: '1',
-        name: 'Pencils',
-        description: 'Graphite',
-        quantity: 8,
-      ),
-      _item(
-        id: '2',
-        name: 'Markers',
-        description: 'Red markers',
-        quantity: 4,
-      ),
+      _item(id: '1', name: 'Pencils', description: 'Graphite', quantity: 8),
+      _item(id: '2', name: 'Markers', description: 'Red markers', quantity: 4),
     ]);
 
-    await tester.pumpWidget(
-      MaterialApp(home: InventoryListScreen(repo: repo)),
-    );
+    await tester.pumpWidget(MaterialApp(home: InventoryListScreen(repo: repo)));
 
     await tester.enterText(find.byType(TextField), 'mark');
     await tester.pumpAndSettle();

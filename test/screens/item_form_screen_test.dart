@@ -6,9 +6,7 @@ import 'package:inventar/screens/item_form_screen.dart';
 
 void main() {
   testWidgets('validates required name field', (tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(home: ItemFormScreen()),
-    );
+    await tester.pumpWidget(const MaterialApp(home: ItemFormScreen()));
 
     await tester.tap(find.widgetWithText(FilledButton, 'Add'));
     await tester.pump();
@@ -27,9 +25,7 @@ void main() {
       updatedAt: DateTime(2024, 1, 1),
     );
 
-    await tester.pumpWidget(
-      MaterialApp(home: ItemFormScreen(item: item)),
-    );
+    await tester.pumpWidget(MaterialApp(home: ItemFormScreen(item: item)));
 
     expect(find.text('Edit Item'), findsOneWidget);
     expect(find.text('Tape'), findsOneWidget);
