@@ -1,0 +1,167 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Cancel in-progress runs for the same branch/PR to save CI minutes.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_CHANNEL: stable
+
+# ─── Jobs ─────────────────────────────────────────────────────────────────────
+
+jobs:
+
+  # ---------------------------------------------------------------------------
+  # 1. Lint & format
+  #    Fast gate that must pass before any other job runs.
+  #    Testable locally:  act push --job lint
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check formatting
+        run: dart format --set-exit-if-changed .
+
+      - name: Analyse (fatal warnings)
+        run: flutter analyze --fatal-warnings
+
+  # ---------------------------------------------------------------------------
+  # 2. Unit tests + coverage
+  #    Testable locally:  act push --job test
+  # ---------------------------------------------------------------------------
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/lcov.info
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
+  # 3. Linux desktop release build
+  #    Testable locally:  act push --job build-linux
+  #    (requires ~1 GB catthehacker Docker image; see .actrc)
+  # ---------------------------------------------------------------------------
+  build-linux:
+    name: Build Linux Desktop
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y \
+            clang \
+            cmake \
+            ninja-build \
+            pkg-config \
+            libgtk-3-dev \
+            liblzma-dev \
+            libstdc++-12-dev
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Linux release
+        run: flutter build linux --release
+
+      - name: Package into tarball
+        run: |
+          tar -czf inventar-linux-x64.tar.gz \
+            -C build/linux/x64/release bundle
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: inventar-linux-x64
+          path: inventar-linux-x64.tar.gz
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  # 4. Android APK release build
+  #    GitHub-hosted runners ship Android SDK; no extra SDK setup needed.
+  #    NOTE: not easily testable with act (no pre-installed Android SDK in
+  #    the catthehacker image). Skip with:  act push --job lint  (or test)
+  # ---------------------------------------------------------------------------
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pin to Java 21 to match the Nix dev shell (jdk21_headless).
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Accept Android SDK licenses
+        run: yes | flutter doctor --android-licenses || true
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: inventar-android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30

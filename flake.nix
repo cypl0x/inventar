@@ -63,6 +63,9 @@
               flutter
               jdk21_headless
               androidSdk
+
+              # Local CI testing (requires Docker)
+              act
             ] ++ linuxDeps;
 
             # Android SDK environment variables

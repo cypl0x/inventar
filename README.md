@@ -217,6 +217,10 @@ inventar/
 │       └── app_icon.png                  # Source icon for all platforms
 ├── screenshots/
 │   └── dashboard.png
+├── .github/
+│   └── workflows/
+│       └── ci.yml                        # GitHub Actions CI pipeline
+├── .actrc                                # act local-CI configuration
 ├── flake.nix                             # Nix development environment
 └── pubspec.yaml                          # Flutter/Dart dependencies
 ```
@@ -229,6 +233,93 @@ The app uses a simple **repository pattern**:
 - `SharedPreferencesInventoryRepository` — concrete implementation that serialises items as JSON and persists them via `shared_preferences`
 
 Swapping the storage backend (e.g. SQLite, HTTP API) only requires a new implementation of the interface.
+
+---
+
+## Continuous Integration
+
+The repository ships a GitHub Actions pipeline at `.github/workflows/ci.yml`.
+
+### Pipeline overview
+
+```
+push / pull_request
+        │
+        ▼
+  ┌─────────┐
+  │  lint   │  dart format --set-exit-if-changed + flutter analyze --fatal-warnings
+  └────┬────┘
+       │
+       ▼
+  ┌─────────┐
+  │  test   │  flutter test --coverage  →  artifact: coverage-report
+  └────┬────┘
+       │
+  ┌────┴────────────────────┐
+  ▼                         ▼
+build-linux              build-android
+flutter build linux      flutter build apk
+→ artifact:              → artifact:
+  inventar-linux-x64       inventar-android-apk
+```
+
+Artifacts are retained for 30 days (14 days for coverage). Download them from the **Actions** tab on GitHub after a run.
+
+---
+
+### Test the pipeline locally with `act`
+
+[`act`](https://github.com/nektos/act) runs GitHub Actions workflows in Docker containers locally, so you can validate the CI before pushing.
+
+**Prerequisites:** Docker must be running. `act` is included in the Nix dev shell.
+
+```sh
+nix develop   # act is available here
+```
+
+Or install standalone:
+```sh
+nix shell nixpkgs#act
+```
+
+#### First run — pull the runner image
+
+`.actrc` configures act to use the Ubuntu 22.04 catthehacker image (~1 GB):
+
+```sh
+act push --job lint   # pulls image on first run, then runs the lint job
+```
+
+#### Useful act commands
+
+```sh
+# Dry-run: see what would execute without actually running
+act push --dry-run
+
+# Run the fast jobs (lint + test) — best for day-to-day verification
+act push --job lint
+act push --job test
+
+# Run the Linux build job inside Docker
+act push --job build-linux
+
+# List all jobs defined in the workflow
+act push --list
+```
+
+> **Android build in act:** The `build-android` job requires the Android SDK
+> which is not pre-installed in the catthehacker image. It's best left to
+> run on GitHub's hosted runners where the SDK is pre-installed. Run
+> `--job lint` and `--job test` locally to catch most issues before pushing.
+
+#### What act covers
+
+| Job | Works in act? | Notes |
+|---|---|---|
+| `lint` | Yes | Fast, no extra deps |
+| `test` | Yes | Fast, no extra deps |
+| `build-linux` | Yes | Installs GTK/Clang via apt inside container |
+| `build-android` | No | Needs pre-installed Android SDK |
 
 ---
 
