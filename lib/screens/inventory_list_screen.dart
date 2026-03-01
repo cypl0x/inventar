@@ -81,7 +81,8 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
               await _delete(item.id);
             },
             style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFFEF4444)),
+              backgroundColor: const Color(0xFFEF4444),
+            ),
             child: const Text('Delete'),
           ),
         ],
@@ -95,19 +96,19 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
     final items = _searchQuery.isEmpty
         ? allItems
         : allItems
-            .where((i) =>
-                i.name
-                    .toLowerCase()
-                    .contains(_searchQuery.toLowerCase()) ||
-                i.description
-                    .toLowerCase()
-                    .contains(_searchQuery.toLowerCase()))
-            .toList();
+              .where(
+                (i) =>
+                    i.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                    i.description.toLowerCase().contains(
+                      _searchQuery.toLowerCase(),
+                    ),
+              )
+              .toList();
 
-    final totalQuantity =
-        allItems.fold(0, (sum, i) => sum + i.quantity);
-    final lowStockCount =
-        allItems.where((i) => i.quantity > 0 && i.quantity <= 5).length;
+    final totalQuantity = allItems.fold(0, (sum, i) => sum + i.quantity);
+    final lowStockCount = allItems
+        .where((i) => i.quantity > 0 && i.quantity <= 5)
+        .length;
     final outOfStockCount = allItems.where((i) => i.quantity == 0).length;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -135,8 +136,10 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _navigateToAddItem,
         icon: const Icon(Icons.add),
-        label: const Text('Add Item',
-            style: TextStyle(fontWeight: FontWeight.w600)),
+        label: const Text(
+          'Add Item',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
       ),
     );
   }
@@ -322,9 +325,9 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
               const SizedBox(height: 24),
               Text(
                 hasItems ? 'No results found' : 'Inventory is empty',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
@@ -345,7 +348,10 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
   }
 
   Widget _buildItemSliver(
-      BuildContext context, List<InventoryItem> items, bool isDark) {
+    BuildContext context,
+    List<InventoryItem> items,
+    bool isDark,
+  ) {
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
       sliver: SliverList.builder(
@@ -359,8 +365,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
               isDark: isDark,
               onTap: () => _navigateToEditItem(item),
               onDecrement: item.quantity > 0
-                  ? () =>
-                      _update(item.copyWith(quantity: item.quantity - 1))
+                  ? () => _update(item.copyWith(quantity: item.quantity - 1))
                   : null,
               onIncrement: () =>
                   _update(item.copyWith(quantity: item.quantity + 1)),
@@ -562,13 +567,16 @@ class _InventoryCard extends StatelessWidget {
                             // Quantity badge
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 3),
+                                horizontal: 10,
+                                vertical: 3,
+                              ),
                               decoration: BoxDecoration(
                                 color: accent.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                    color: accent.withValues(alpha: 0.35),
-                                    width: 1),
+                                  color: accent.withValues(alpha: 0.35),
+                                  width: 1,
+                                ),
                               ),
                               child: Text(
                                 '${item.quantity}',
@@ -602,7 +610,9 @@ class _InventoryCard extends StatelessWidget {
                             // Stock label pill
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 7, vertical: 2),
+                                horizontal: 7,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: accent.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(4),
@@ -670,8 +680,7 @@ class _InventoryCard extends StatelessWidget {
                                       ? Colors.white30
                                       : const Color(0xFF94A3B8),
                                 ),
-                                onPressed: () =>
-                                    _showActions(context),
+                                onPressed: () => _showActions(context),
                               ),
                             ),
                           ],
@@ -738,14 +747,13 @@ class _InventoryCard extends StatelessWidget {
                         Text(
                           item.name,
                           style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Text(
                           '${item.quantity} units',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: _accentColor,
-                          ),
+                          style: TextStyle(fontSize: 13, color: _accentColor),
                         ),
                       ],
                     ),
@@ -762,11 +770,16 @@ class _InventoryCard extends StatelessWidget {
                   color: const Color(0xFF4F46E5).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.edit_outlined,
-                    color: Color(0xFF4F46E5), size: 18),
+                child: const Icon(
+                  Icons.edit_outlined,
+                  color: Color(0xFF4F46E5),
+                  size: 18,
+                ),
               ),
-              title: const Text('Edit Item',
-                  style: TextStyle(fontWeight: FontWeight.w600)),
+              title: const Text(
+                'Edit Item',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               subtitle: const Text('Update name, description or location'),
               onTap: () {
                 Navigator.pop(ctx);
@@ -781,12 +794,19 @@ class _InventoryCard extends StatelessWidget {
                   color: const Color(0xFFEF4444).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.delete_outline,
-                    color: Color(0xFFEF4444), size: 18),
+                child: const Icon(
+                  Icons.delete_outline,
+                  color: Color(0xFFEF4444),
+                  size: 18,
+                ),
               ),
-              title: const Text('Delete Item',
-                  style: TextStyle(
-                      color: Color(0xFFEF4444), fontWeight: FontWeight.w600)),
+              title: const Text(
+                'Delete Item',
+                style: TextStyle(
+                  color: Color(0xFFEF4444),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               subtitle: const Text('Permanently remove from inventory'),
               onTap: () {
                 Navigator.pop(ctx);

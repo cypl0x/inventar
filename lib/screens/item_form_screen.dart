@@ -22,12 +22,15 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.item?.name ?? '');
-    _descriptionController =
-        TextEditingController(text: widget.item?.description ?? '');
+    _descriptionController = TextEditingController(
+      text: widget.item?.description ?? '',
+    );
     _quantityController = TextEditingController(
-        text: widget.item?.quantity.toString() ?? '1');
-    _locationController =
-        TextEditingController(text: widget.item?.location ?? '');
+      text: widget.item?.quantity.toString() ?? '1',
+    );
+    _locationController = TextEditingController(
+      text: widget.item?.location ?? '',
+    );
   }
 
   @override
@@ -55,8 +58,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     if (_formKey.currentState!.validate()) {
       final now = DateTime.now();
       final item = InventoryItem(
-        id: widget.item?.id ??
-            DateTime.now().millisecondsSinceEpoch.toString(),
+        id: widget.item?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
         name: _nameController.text.trim(),
         description: _descriptionController.text.trim(),
         quantity: int.parse(_quantityController.text),
@@ -78,8 +80,9 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor:
-            isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+        backgroundColor: isDark
+            ? const Color(0xFF0F172A)
+            : const Color(0xFFF8FAFC),
         leading: IconButton(
           icon: const Icon(Icons.close),
           tooltip: 'Discard',
@@ -94,14 +97,13 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
             padding: const EdgeInsets.only(right: 12),
             child: FilledButton.icon(
               onPressed: _saveItem,
-              icon: Icon(
-                isEditing ? Icons.save_outlined : Icons.add,
-                size: 18,
-              ),
+              icon: Icon(isEditing ? Icons.save_outlined : Icons.add, size: 18),
               label: Text(isEditing ? 'Save' : 'Add'),
               style: FilledButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
               ),
             ),
           ),
@@ -150,8 +152,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                   child: Icon(
                     Icons.notes_outlined,
                     size: 20,
-                    color:
-                        isDark ? Colors.white38 : const Color(0xFF94A3B8),
+                    color: isDark ? Colors.white38 : const Color(0xFF94A3B8),
                   ),
                 ),
                 alignLabelWithHint: true,
@@ -208,7 +209,9 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                 label: Text(
                   isEditing ? 'Save Changes' : 'Add to Inventory',
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -317,7 +320,9 @@ class _QuantityStepper extends StatelessWidget {
                         currentQty == 1 ? 'unit' : 'units',
                         style: TextStyle(
                           fontSize: 13,
-                          color: isDark ? Colors.white38 : const Color(0xFF94A3B8),
+                          color: isDark
+                              ? Colors.white38
+                              : const Color(0xFF94A3B8),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -372,9 +377,7 @@ class _QuantityStepper extends StatelessWidget {
                   'Tap − / + or type below',
                   style: TextStyle(
                     fontSize: 11,
-                    color: isDark
-                        ? Colors.white30
-                        : const Color(0xFFCBD5E1),
+                    color: isDark ? Colors.white30 : const Color(0xFFCBD5E1),
                   ),
                 ),
               ],

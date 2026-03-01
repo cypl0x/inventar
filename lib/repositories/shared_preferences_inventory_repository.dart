@@ -21,8 +21,8 @@ class SharedPreferencesInventoryRepository implements InventoryRepository {
     final items = raw == null
         ? <InventoryItem>[]
         : (jsonDecode(raw) as List<dynamic>)
-            .map((e) => InventoryItem.fromJson(e as Map<String, dynamic>))
-            .toList();
+              .map((e) => InventoryItem.fromJson(e as Map<String, dynamic>))
+              .toList();
     return SharedPreferencesInventoryRepository._(prefs, items);
   }
 
@@ -56,7 +56,7 @@ class SharedPreferencesInventoryRepository implements InventoryRepository {
   /// write, there is no window where an in-flight operation can be lost —
   /// each _flush() snapshot is consistent.
   Future<void> _flush() => _prefs.setString(
-        _storageKey,
-        jsonEncode(_cache.map((e) => e.toJson()).toList()),
-      );
+    _storageKey,
+    jsonEncode(_cache.map((e) => e.toJson()).toList()),
+  );
 }

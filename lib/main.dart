@@ -41,8 +41,9 @@ class InventoryApp extends StatelessWidget {
       useMaterial3: true,
       colorScheme: colorScheme,
       brightness: brightness,
-      scaffoldBackgroundColor:
-          isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      scaffoldBackgroundColor: isDark
+          ? const Color(0xFF0F172A)
+          : const Color(0xFFF8FAFC),
       cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -51,13 +52,13 @@ class InventoryApp extends StatelessWidget {
       appBarTheme: AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 0,
-        systemOverlayStyle:
-            isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+        systemOverlayStyle: isDark
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor:
-            isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+        fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -78,8 +79,10 @@ class InventoryApp extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: colorScheme.error, width: 2),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         labelStyle: TextStyle(
           color: isDark ? Colors.white54 : const Color(0xFF64748B),
         ),
