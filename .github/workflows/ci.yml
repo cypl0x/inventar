@@ -20,6 +20,31 @@ env:
 jobs:
 
   # ---------------------------------------------------------------------------
+  # 0. Populate Nix binary cache
+  #    Builds the Nix dev shell and pushes all store paths to cachix so that
+  #    local `nix develop` is fast for all contributors.
+  #    Testable locally:  act push --job nix-cache
+  # ---------------------------------------------------------------------------
+  nix-cache:
+    name: Populate Nix Cache
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: cachix/cachix-action@v16
+        with:
+          name: inventar
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - name: Build dev shell (populate cache)
+        run: nix develop --command echo "Nix dev shell built and cached"
+
+  # ---------------------------------------------------------------------------
   # 1. Lint & format
   #    Fast gate that must pass before any other job runs.
   #    Testable locally:  act push --job lint

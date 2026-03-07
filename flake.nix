@@ -1,6 +1,13 @@
 {
   description = "Inventar – Flutter-based inventory management app";
 
+  nixConfig = {
+    extra-substituters = [ "https://inventar.cachix.org" ];
+    extra-trusted-public-keys = [
+      "inventar.cachix.org-1:LfvgHLqlvjtNd9sV+9Uz4iTAE3trwW7NtodVlVepyAw="
+    ];
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
